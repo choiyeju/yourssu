@@ -1,52 +1,47 @@
 package com.example.yourssu2.controller
-/*
-import com.example.yourssu2.service.MemoService.allMemos
-import com.example.yourssu2.service.MemoService.getMemoByMemoId
-import com.example.yourssu2.service.MemoService.registerMemo
-import com.example.yourssu2.service.MemoService.modifyMemo
-import com.example.yourssu2.service.MemoService.removeMemo
 
- */
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.beans.factory.annotation.Autowired
 import com.example.yourssu2.service.MemoService
-import org.springframework.web.bind.annotation.GetMapping
 import java.util.HashMap
-import org.springframework.web.bind.annotation.PathVariable
 import com.example.yourssu2.model.Memo
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.DeleteMapping
+import com.fasterxml.jackson.databind.ser.FilterProvider
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
+import org.springframework.http.converter.json.MappingJacksonValue
+import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/memos")
+@RequestMapping("")
 open class MemoController {
     @Autowired
     private val memoService: MemoService? = null
 
-    @get:GetMapping("")
-    val allMemos: HashMap<String, Any?>?
-        get() = memoService!!.getAllMemos()
-
-    @GetMapping("/{id}")
-    fun getMemoByUMemoId(@PathVariable id: Int?): Memo {
-        return memoService!!.getMemoByMemoId(id)
+    @GetMapping("/GET/memos")
+    fun getMemoByDatePage2(@RequestParam(required = false)date :String?, @RequestParam(required = false)page: Int?): MappingJacksonValue {
+        if(date.equals(null))
+            return memoService!!.getAllMemos()
+        else
+            return memoService!!.getMemoByDatePage(date, page)
+            //return memoService!!.getMemoByDatePage()
     }
 
-    @PostMapping("")
-    fun registerUser(@RequestBody memo: Memo): Memo {
+    @GetMapping("/GET/memos/{memoId}")
+    fun getMemoByMemoId(@PathVariable memoId: Int?): MappingJacksonValue {
+        return memoService!!.getMemoByMemoId(memoId)
+    }
+
+    @PostMapping("/POST/memos")
+    fun registerUser(@RequestBody memo: Memo): MappingJacksonValue {
         return memoService!!.registerMemo(memo)
     }
 
-    @PutMapping("/{id}")
-    fun modifyUser(@PathVariable id: Int?, @RequestBody memo: Memo) {
-        memoService!!.modifyMemo(id, memo)
+    @PutMapping("/PUT/memos/{memoId}")
+    fun modifyUser(@PathVariable memoId: Int?, @RequestBody memo: Memo): MappingJacksonValue {
+        return memoService!!.modifyMemo(memoId, memo)
     }
 
-    @DeleteMapping("/{id}")
-    fun removeUser(@PathVariable id: Int?) {
-        memoService!!.removeMemo(id)
+    @DeleteMapping("/DELETE/memos/{memoId}")
+    fun removeUser(@PathVariable memoId: Int?) {
+        memoService!!.removeMemo(memoId)
     }
 }
